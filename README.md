@@ -4,7 +4,18 @@
 [![Postman Platform](https://shields.io)](https://postman.com)
 [![FastAPI Core](https://shields.io)](https://tiangolo.com)
 
-An enterprise-grade API test automation framework built for banking core engines. It implements dynamic authentication token chaining, structural JSON Schema compliance validation, and security boundary isolation.
+---
+
+## 🎯 About The Project
+This framework serves as a high-performance, enterprise-grade test automation suite built specifically for validating core financial ledger APIs. When handling secure banking engines, testing requires robust token management, strict schema enforcement, and absolute reliability. 
+
+This project solves those requirements by launching a localized **FastAPI ledger engine mock server** and evaluating it against a containerized **Postman Collection pipeline**. The suite handles complex workflows—including dynamic JWT bearer token chaining, data isolation, and boundary security testing—in milliseconds, both locally and entirely in the cloud via CI/CD.
+
+### 🛠️ Technology Stack Breakdown
+* **Test Orchestration:** Postman App (Visual construction, environments, and JS assertion scripts)
+* **Mock Backend Server:** FastAPI + Pydantic (High-performance, typing-enforced local ledger server engine)
+* **CLI Runner Engine:** Newman CLI + HTML Extra Reporter (Terminal headless run execution and styled visual monitoring dashboards)
+* **Continuous Integration:** GitHub Actions Pipelines (Automated cloud environment provisioning, background execution, and build artifact management)
 
 ---
 
