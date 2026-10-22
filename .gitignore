@@ -1,0 +1,13 @@
+# Target compilation matrices and html analytical reporting artifacts
+target/
+reports/
+*.html
+
+# Python environment modules and cache pools
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Operational system configurations
+.DS_Store

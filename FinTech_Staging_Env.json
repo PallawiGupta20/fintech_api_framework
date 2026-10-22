@@ -1,0 +1,11 @@
+{
+  "id": "fintech-staging-env-pool",
+  "name": "FinTech-Staging",
+  "values": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8001", "type": "default", "enabled": true },
+    { "key": "baseurl", "value": "http://127.0.0.1:8001", "type": "default", "enabled": true },
+    { "key": "jwtToken", "value": "", "type": "default", "enabled": true },
+    { "key": "accountId", "value": "", "type": "default", "enabled": true },
+    { "key": "deviceFingerprint", "value": "", "type": "default", "enabled": true }
+  ]
+}

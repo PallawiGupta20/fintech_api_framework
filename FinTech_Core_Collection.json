@@ -1,0 +1,173 @@
+{
+  "info": {
+    "_postman_id": "319c8efe-2115-42ad-b8aa-d6af34642796",
+    "name": "FinTech_Core_Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "25564863"
+  },
+  "item": [
+    {
+      "name": "User Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Verify successful authentication status code\npm.test(\"HTTP Status is 200 OK\", function () {\n    pm.response.to.have.status(200);\n});\n\n// 2. Strict response performance benchmark (< 250ms SLA)\npm.test(\"Performance Benchmark: Response time is under 250ms SLA\", function () {\n    pm.expect(pm.response.responseTime).to.be.below(250);\n});\n\n// 3. Extract and chain token to environment variables pool\nconst responseData = pm.response.json();\npm.test(\"Token Extraction: Secure JWT generated cleanly\", function () {\n    pm.expect(responseData).to.have.property(\"accessToken\");\n    \n    // Inject token directly into active environment variables pool\n    pm.environment.set(\"jwtToken\", responseData.accessToken);\n});\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"admin_dealer\",\n    \"password\": \"VaultSecure2026!\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Ledger Account",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP Status Code is 201 Created\", function () {\n    pm.response.to.have.status(201);\n});\n\n// Using a unique variable name to completely prevent re-declaration errors\nconst accountResponsePayload = pm.response.json();\n\nif (accountResponsePayload.accountId) {\n    pm.environment.set(\"accountId\", accountResponsePayload.accountId);\n}\n\nconst jsonSchemaBlueprint = {\n    \"type\": \"object\",\n    \"required\": [\"accountId\", \"status\", \"balance\", \"type\"],\n    \"properties\": {\n        \"accountId\": {\"type\": \"string\", \"pattern\": \"^ACC-[0-9]+$\"},\n        \"status\": {\"type\": \"string\", \"enum\": [\"ACTIVE\", \"PENDING\"]},\n        \"balance\": {\"type\": \"number\"},\n        \"type\": {\"type\": \"string\"}\n    }\n};\n\npm.test(\"Response body matches strict corporate JSON Schema structural layout\", function () {\n    pm.response.to.have.jsonSchema(jsonSchemaBlueprint);\n});\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwtToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"account_type\": \"SAVINGS\",\n    \"initial_deposit\": 250.00\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/accounts/create",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "accounts",
+            "create"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Account - Missing Auth Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Security Check: Assert the server rejected the unauthenticated entry\npm.test(\"Security Check: HTTP Status Code is 403 Forbidden\", function () {\n    pm.response.to.have.status(403);\n});\n\n// 2. Structural Error Response String Validation\npm.test(\"Error payload contains clear security violation messaging\", function () {\n    const responseData = pm.response.json();\n    pm.expect(responseData.detail).to.include(\"Access Denied\");\n});\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"account_type\": \"CHECKING\",\n    \"initial_deposit\": 250.00\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/accounts/create",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "accounts",
+            "create"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Account Balance",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Assert Response Status Code Compliance\npm.test(\"HTTP Status is 200 OK\", function () {\n    pm.response.to.have.status(200);\n});\n\n// 2. Data Ledger Validation: Cross-verify account IDs and balance structures\npm.test(\"Data Ledger Check: Returned account matches requested ID\", function () {\n    const responseData = pm.response.json();\n    const expectedId = pm.environment.get(\"accountId\");\n    \n    // Cross-verify that the banking ledger matches our environment state\n    pm.expect(responseData.accountId).to.eql(expectedId);\n    pm.expect(responseData.status).to.eql(\"ACTIVE\");\n    pm.expect(responseData.balance).to.be.a(\"number\");\n});\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwtToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{accountId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "accounts",
+            "{{accountId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

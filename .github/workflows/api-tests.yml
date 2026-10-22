@@ -1,0 +1,64 @@
+name: Enterprise FinTech API Framework CI Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  api-automation-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Pull the codebase into the virtual container engine
+    - name: Check out corporate repository configuration
+      uses: actions/checkout@v4
+
+    # 2. Boot up isolated Python environment runtime
+    - name: Initialize Python Core Matrix
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        cache: 'pip'
+
+    # 3. Pull required dependencies for the FastAPI mock server
+    - name: Install Python validation extensions
+      run: |
+        python -m pip install --upgrade pip
+        pip install fastapi uvicorn pydantic
+
+    # 4. Initialize Node.js for running Newman commands
+    - name: Initialize Node.js Automation Engine
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    # 5. Install Newman runner core globally inside the cloud runner
+    - name: Install Newman Global Command Engines
+      run: |
+        npm install -g newman newman-reporter-htmlextra
+
+    # 6. Run the FastAPI Mock Server in the background on port 8001
+    - name: Deploy Local Mock Engine Core
+      run: |
+        python -m uvicorn utils.mock_server:app --port 8001 --reload &
+        echo "Waiting for core ledger server engine to initialize safely..."
+        sleep 3
+
+    # 7. Run the collection matrix via Newman and generate report artifacts
+    - name: Trigger Automated Newman Core Assertions Suite
+      run: |
+        newman run FinTech_Core_Collection.json \
+          -e FinTech_Staging_Env.json \
+          -r cli,htmlextra \
+          --reporter-htmlextra-export target/reports/postman_dashboard.html
+
+    # 8. Upload the HTML Report so you can download and view it from GitHub
+    - name: Archive Visual Test Report Dashboard
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: postman-test-dashboard
+        path: target/reports/postman_dashboard.html
+        retention-days: 7
