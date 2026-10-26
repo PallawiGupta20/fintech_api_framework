@@ -20,7 +20,8 @@ This project solves those requirements by launching a localized **FastAPI ledger
 ---
 
 ## 🕹️ Interactive Navigation
-* [🏗️ Core Architecture](#-core-architecture)
+* [🏗️ Core Architecture](#️-core-architecture)
+* [📋 Framework Component Matrix](#-framework-component-matrix)
 * [🚦 End-to-End API Pipeline Flow](#-end-to-end-api-pipeline-flow)
 * [🚀 Local Command-Line Execution](#-local-command-line-execution)
 * [⚙️ Cloud CI/CD Automation Matrix](#️-cloud-cicd-automation-matrix)
@@ -28,6 +29,42 @@ This project solves those requirements by launching a localized **FastAPI ledger
 ---
 
 ## 🏗️ Core Architecture
+
+```mermaid
+graph LR
+    %% Define Styles to match enterprise workflow colors
+    classDef client fill:#f9f9fb,stroke:#706fd3,stroke-width:1px;
+    classDef service fill:#f9f9fb,stroke:#ff5252,stroke-width:1px;
+    classDef reporter fill:#f1f2f6,stroke:#747d8c,stroke-width:1px,stroke-dasharray: 3 3;
+    classDef pipeline fill:#eff1fa,stroke:#341f97,stroke-width:1px;
+
+    %% Element Definitions
+    Client[Postman Collection<br/>& Newman Runner]:::client
+    Server[FastAPI Mock Engine<br/>utils/mock_server.py]:::service
+    Dashboard[HTML Extra Report<br/>postman_dashboard.html]:::reporter
+    CICD[GitHub Actions CI/CD<br/>api-tests.yml]:::pipeline
+
+    %% Data Flow Connections
+    Client -->|Executes API Requests<br/>& Validates Assertions| Server
+    Client -->|Compiles Execution Matrix<br/>& Exports Logs| Dashboard
+    CICD -->|Triggers Cloud Provisioning<br/>& Launches Test Runner| Client
+```
+
+---
+
+## 📋 Framework Component Matrix
+
+| Component | Target Runtime / Port | Strategic Role |
+| :--- | :--- | :--- |
+| **FastAPI Mock Server** | Local Host (Port `8001`) / CI Background | Simulates secure core financial banking ledger engines with strict Pydantic parsing. |
+| **Postman Testing Matrix** | Postman Client Suite (`FinTech_Core_Collection.json`) | Constructs visual requests, workflow scripts, environment maps, and Ajv schema assertions. |
+| **Newman CLI Core Engine** | Node.js Headless System Environment | Executes the automated validation pipeline via command line locally or within CI workers. |
+| **HTML Extra Reporter** | System Work Directory (`target/reports/`) | Aggregates runtime data into single-page, downloadable interactive visual analytics dashboards. |
+| **GitHub Actions Pipeline** | Cloud Virtual Server (`ubuntu-latest`) | Orchestrates dynamic runtime installs, hooks environments, and handles test build artifacts. |
+
+---
+
+## 📂 Directory Blueprint
 
 ```text
 fintech_api_framework/
